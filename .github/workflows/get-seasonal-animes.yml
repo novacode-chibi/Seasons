@@ -1,0 +1,50 @@
+name: Get seasonal animes
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # toutes les jours
+  workflow_dispatch:
+
+jobs:
+  fetch-anime:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Installer les dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests googletrans
+
+      - name: Récupérer les données d'anime
+        run: python fetch_anime.py
+
+      - name: Configurer Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Commit & Push si changements
+        run: |
+          git add seasonal_animes.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update seasonal anime data"
+            git push
+          else
+            echo "No changes detected"
+          fi
