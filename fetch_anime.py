@@ -16,7 +16,7 @@ JOUR_FR = {
     None: "~"
 }
 
-URL_PREFIX = "https://cdn.myanimelist.net/images/anime/"
+URL_PREFIX = "https://myanimelist.net/images/anime/"
 
 
 def compress_cover(url):
